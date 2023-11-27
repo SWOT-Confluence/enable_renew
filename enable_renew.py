@@ -53,4 +53,5 @@ def handler(event, context):
 
     # Create new continent.json file
     with open(EFS_DIR.joinpath("continent.json"), 'w') as jf:
-        json.dumps(CONTINENTS, jf, indent=2)
+        json.dump(CONTINENTS, jf, indent=2)
+    print("Wrote new continent.json file.")
