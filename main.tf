@@ -26,6 +26,43 @@ data "aws_iam_role" "eventbridge_renew_exe_role" {
   name = "${var.prefix}-eventbridge-renew-execution-role"
 }
 
+data "aws_efs_access_point" "fsap_generate_array_size" {
+  access_point_id = var.fsap_id
+}
+
+data "aws_security_groups" "vpc_default_sg" {
+  filter {
+    name   = "group-name"
+    values = ["default"]
+  }
+  filter {
+    name   = "vpc-id"
+    values = [data.aws_vpc.application_vpc.id]
+  }
+}
+
+data "aws_subnet" "private_application_subnet" {
+  for_each = toset(data.aws_subnets.private_application_subnets.ids)
+  id       = each.value
+}
+
+data "aws_subnets" "private_application_subnets" {
+  filter {
+    name   = "vpc-id"
+    values = [data.aws_vpc.application_vpc.id]
+  }
+  filter {
+    name   = "tag:Name"
+    values = ["${var.prefix}-subnet-b", "${var.prefix}-subnet-c", "${var.prefix}-subnet-d"]
+  }
+}
+
+data "aws_vpc" "application_vpc" {
+  tags = {
+    "Name" : "${var.prefix}"
+  }
+}
+
 # Local variables
 locals {
   account_id = data.aws_caller_identity.current.account_id

@@ -5,18 +5,33 @@ Store.
 """
 
 # Standard imports
+import json
+import pathlib
 import sys
 
 # Third-party imports
 import boto3
 import botocore
 
+# Constants
+CONTINENTS = [
+    { "af" : [1] },
+    { "as" : [4, 3] },
+    { "eu" : [2] },
+    { "na" : [7, 8, 9] },
+    { "oc" : [5] },
+    { "sa" : [6] }
+]
+EFS_DIR = pathlib.Path("/mnt/data")
+
 def handler(event, context):
-    """Enable EventBridge schedule that invokes renew Lambda.
+    """Enable EventBridge schedule that invokes renew Lambda. Lambda also
+    creates a fresh continent.json file for next Confluence workflow execution.
     
     Schedule runs every 50 minutes as creds expire every 1 hour.
     """
     
+    # Enable schedule
     scheduler = boto3.client("scheduler")
     try:
         # Get schedule
@@ -35,3 +50,7 @@ def handler(event, context):
     except botocore.exceptions.ClientError as e:
         print(f"Error encountered - {e}")
         sys.exit(1)
+
+    # Create new continent.json file
+    with open(EFS_DIR.joinpath("continent.json"), 'w') as jf:
+        json.dumps(CONTINENTS, jf, indent=2)
