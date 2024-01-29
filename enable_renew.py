@@ -61,6 +61,7 @@ def handler(event, context):
     try:
         response = sf.send_task_success(
             taskToken=event["token"],
+            output={}
         )
         print("Sent task success.")
     
