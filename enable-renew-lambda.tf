@@ -111,6 +111,15 @@ resource "aws_iam_policy" "aws_lambda_enable_renew_execution_policy" {
             "elasticfilesystem:AccessPointArn" : "${data.aws_efs_access_point.fsap_generate_array_size.arn}"
           }
         }
+      },
+      {
+        "Sid" : "AllowStepFunctions",
+        "Effect" : "Allow",
+        "Action" : [
+          "states:SendTaskFailure",
+          "states:SendTaskSuccess"
+        ],
+        "Resource" : "arn:aws:states:${var.aws_region}:${local.account_id}:stateMachine:${var.prefix}-workflow"
       }
     ]
   })

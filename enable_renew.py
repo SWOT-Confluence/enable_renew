@@ -55,3 +55,19 @@ def handler(event, context):
     with open(EFS_DIR.joinpath("continent.json"), 'w') as jf:
         json.dump(CONTINENTS, jf, indent=2)
     print("Wrote new continent.json file.")
+    
+    # Send success response
+    sf = boto3.client("stepfunctions")
+    try:
+        response = sf.send_task_success(
+            taskToken=event["token"],
+        )
+        print("Sent task success.")
+    
+    except botocore.exceptions.ClientError as err:
+        response = sf.send_task_failure(
+            taskToken=event["token"],
+            error=err.response['Error']['Code'],
+            cause=err.response['Error']['Message']
+        )
+        print("Sent task failure.")
