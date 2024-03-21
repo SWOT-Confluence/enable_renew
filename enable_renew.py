@@ -6,6 +6,7 @@ Store.
 
 # Standard imports
 import json
+import os
 import pathlib
 import sys
 
@@ -35,7 +36,7 @@ def handler(event, context):
     scheduler = boto3.client("scheduler")
     try:
         # Get schedule
-        get_response = scheduler.get_schedule(Name="confluence-dev1-renew")
+        get_response = scheduler.get_schedule(Name=f"{os.getenv('ENV_PREFIX')}-renew")
         
         # Update schedule
         update_response = scheduler.update_schedule(

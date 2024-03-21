@@ -7,12 +7,17 @@ resource "aws_lambda_function" "aws_lambda_enable_renew" {
   runtime          = "python3.9"
   source_code_hash = filebase64sha256("enable_renew.zip")
   timeout          = 300
+  environment {
+    variables = {
+      ENV_PREFIX = var.prefix
+    }
+  }
   vpc_config {
     subnet_ids         = data.aws_subnets.private_application_subnets.ids
     security_group_ids = data.aws_security_groups.vpc_default_sg.ids
   }
   file_system_config {
-    arn              = data.aws_efs_access_point.fsap_generate_array_size.arn
+    arn              = data.aws_efs_access_point.fsap_enable_renew.arn
     local_mount_path = "/mnt/data"
   }
 }
@@ -105,10 +110,10 @@ resource "aws_iam_policy" "aws_lambda_enable_renew_execution_policy" {
           "elasticfilesystem:ClientWrite",
           "elasticfilesystem:DescribeMountTargets"
         ],
-        "Resource" : "${data.aws_efs_access_point.fsap_generate_array_size.file_system_arn}"
+        "Resource" : "${data.aws_efs_access_point.fsap_enable_renew.file_system_arn}"
         "Condition" : {
           "StringEquals" : {
-            "elasticfilesystem:AccessPointArn" : "${data.aws_efs_access_point.fsap_generate_array_size.arn}"
+            "elasticfilesystem:AccessPointArn" : "${data.aws_efs_access_point.fsap_enable_renew.arn}"
           }
         }
       },

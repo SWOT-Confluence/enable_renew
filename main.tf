@@ -26,7 +26,7 @@ data "aws_iam_role" "eventbridge_renew_exe_role" {
   name = "${var.prefix}-eventbridge-renew-execution-role"
 }
 
-data "aws_efs_access_point" "fsap_generate_array_size" {
+data "aws_efs_access_point" "fsap_enable_renew" {
   access_point_id = var.fsap_id
 }
 
