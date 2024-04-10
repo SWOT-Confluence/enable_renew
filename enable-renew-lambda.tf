@@ -20,6 +20,9 @@ resource "aws_lambda_function" "aws_lambda_enable_renew" {
     arn              = data.aws_efs_access_point.fsap_enable_renew.arn
     local_mount_path = "/mnt/data"
   }
+  tags = {
+    "Name" = "${var.prefix}-enable-renew"
+  }
 }
 
 # AWS Lambda execution role & policy
