@@ -30,6 +30,10 @@ data "aws_efs_access_point" "fsap_enable_renew" {
   access_point_id = var.fsap_id
 }
 
+data "aws_s3_bucket" "confluence_json" {
+  bucket = "${var.prefix}-json"
+}
+
 data "aws_security_groups" "vpc_default_sg" {
   filter {
     name   = "group-name"

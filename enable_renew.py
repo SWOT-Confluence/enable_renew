@@ -15,14 +15,6 @@ import boto3
 import botocore
 
 # Constants
-CONTINENTS = [
-    { "af" : [1] },
-    { "as" : [4, 3] },
-    { "eu" : [2] },
-    { "na" : [7, 8, 9] },
-    { "oc" : [5] },
-    { "sa" : [6] }
-]
 EFS_DIR = pathlib.Path("/mnt/data")
 
 def handler(event, context):
@@ -51,11 +43,10 @@ def handler(event, context):
     except botocore.exceptions.ClientError as e:
         print(f"Error encountered - {e}")
         sys.exit(1)
-
-    # Create new continent.json file
-    with open(EFS_DIR.joinpath("continent.json"), 'w') as jf:
-        json.dump(CONTINENTS, jf, indent=2)
-    print("Wrote new continent.json file.")
+        
+    # Get continent.json from S3 to EFS
+    download_continent_json()
+    print(f"Downloaded: {EFS_DIR.joinpath('continent-datagen.json')}")
     
     # Send success response
     sf = boto3.client("stepfunctions")
@@ -73,3 +64,13 @@ def handler(event, context):
             cause=err.response['Error']['Message']
         )
         print("Sent task failure.")
+        
+def download_continent_json():
+    """Download continent JSON from S3 bucket to EFS."""
+    
+    # Download
+    s3 = boto3.client("s3")
+    s3.download_file(f"{os.getenv('ENV_PREFIX')}-json", 
+                     "continent-datagen.json", 
+                     EFS_DIR.joinpath("continent-datagen.json")
+                     )

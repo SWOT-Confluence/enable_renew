@@ -128,6 +128,37 @@ resource "aws_iam_policy" "aws_lambda_enable_renew_execution_policy" {
           "states:SendTaskSuccess"
         ],
         "Resource" : "arn:aws:states:${var.aws_region}:${local.account_id}:stateMachine:${var.prefix}-workflow"
+      },
+      {
+        "Sid" : "AllowListAllBuckets",
+        "Effect" : "Allow",
+        "Action" : "s3:ListAllMyBuckets",
+        "Resource" : "*"
+      },
+      {
+        "Sid" : "AllowListBuckets",
+        "Effect" : "Allow",
+        "Action" : [
+          "s3:ListBucket",
+          "s3:ListBucketVersions"
+        ],
+        "Resource" : [
+          "${data.aws_s3_bucket.confluence_json.arn}"
+        ]
+      },
+      {
+        "Sid" : "AllGetPutObjects",
+        "Effect" : "Allow",
+        "Action" : [
+          "s3:PutObject",
+          "s3:GetObject",
+          "s3:ListBucket",
+          "s3:GetObjectAttributes",
+          "s3:ListMultipartUploadParts"
+        ],
+        "Resource" : [
+          "${data.aws_s3_bucket.confluence_json.arn}/*"
+        ]
       }
     ]
   })
